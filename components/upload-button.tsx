@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import imageCompression from "browser-image-compression";
 import { registerMedia } from "@/app/actions/media";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -14,6 +15,19 @@ type UploadButtonProps = {
   albumId: string;
   slug: string;
 };
+
+async function compressImage(file: File): Promise<File> {
+  try {
+    return await imageCompression(file, {
+      maxSizeMB: 0.4,
+      maxWidthOrHeight: 1600,
+      useWebWorker: true,
+      fileType: file.type,
+    });
+  } catch {
+    return file;
+  }
+}
 
 export function UploadButton({ albumId, slug }: UploadButtonProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,16 +64,17 @@ export function UploadButton({ albumId, slug }: UploadButtonProps) {
     const supabase = createClient();
 
     for (const file of validFiles) {
-      const ext = extensionFromMimeType(file.type);
+      const compressedFile = await compressImage(file);
+      const ext = extensionFromMimeType(compressedFile.type);
       const path = `${albumId}/${crypto.randomUUID()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from(MEDIA_BUCKET)
-        .upload(path, file, { contentType: file.type });
+        .upload(path, compressedFile, { contentType: compressedFile.type });
 
       if (!uploadError) {
         try {
-          await registerMedia(albumId, slug, path, file.type);
+          await registerMedia(albumId, slug, path, compressedFile.type);
         } catch {
           setError("Alguna foto no se pudo guardar. Inténtalo de nuevo.");
         }
