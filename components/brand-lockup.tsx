@@ -35,7 +35,7 @@ export function BrandLockup({
     <span className="inline-flex flex-col items-start gap-1.5">
       <span className={s.wordmark} aria-label="Album NFC">
         <span className="text-piedra">Album</span>
-        <span className="text-tierra"> NFC</span>
+        <span className="text-tierra"> Familiar</span>
       </span>
       {showTagline ? (
         <span className={`font-medium text-muted-foreground ${s.tagline}`}>
