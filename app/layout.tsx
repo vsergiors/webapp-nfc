@@ -9,7 +9,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Nuestro Álbum",
+  title: "Álbum Fotos",
   description:
     "Tus recuerdos en familia, a un toque. Cada pegatina abre un álbum de fotos para todos.",
 };
